@@ -1,0 +1,152 @@
+install.packages("plyr")
+install.packages("dplyr")
+install.packages("neuralnet")
+install.packages("rJava")
+library(neuralnet)
+library(plyr)
+library(dplyr)
+
+SP500 <- read.csv("C:\\Users\\Siddh\\Documents\\Stock Neural Network Advisory\\SP500.csv", header = TRUE)
+FB <- read.csv("C:\\Users\\Siddh\\Documents\\Stock Neural Network Advisory\\FB.csv", header = TRUE)
+GOOGL <- read.csv("C:\\Users\\Siddh\\Documents\\Stock Neural Network Advisory\\GOOGL.csv", header = TRUE)
+NFLX <- read.csv("C:\\Users\\Siddh\\Documents\\Stock Neural Network Advisory\\NFLX.csv", header = TRUE)
+AMZN <- read.csv("C:\\Users\\Siddh\\Documents\\Stock Neural Network Advisory\\AMZN.csv", header = TRUE)
+
+normalized_FB_close = (FB$Adj.Close-min(FB$Adj.Close))/(max(FB$Adj.Close)-min(FB$Adj.Close))
+normalized_GOOGL_close = (GOOGL$Adj.Close-min(GOOGL$Adj.Close))/(max(GOOGL$Adj.Close)-min(GOOGL$Adj.Close))
+normalized_NFLX_close = (NFLX$Adj.Close-min(NFLX$Adj.Close))/(max(NFLX$Adj.Close)-min(NFLX$Adj.Close))
+normalized_AMZN_close = (AMZN$Adj.Close-min(AMZN$Adj.Close))/(max(AMZN$Adj.Close)-min(AMZN$Adj.Close))
+normalized_SP500_open = (SP500$Open-min(SP500$Open))/(max(SP500$Open)-min(SP500$Open))
+normalized_FB_open = (FB$Open-min(FB$Open))/(max(FB$Open)-min(FB$Open))
+normalized_GOOGL_open = (GOOGL$Open-min(GOOGL$Open))/(max(GOOGL$Open)-min(GOOGL$Open))
+normalized_NFLX_open = (NFLX$Open-min(NFLX$Open))/(max(NFLX$Open)-min(NFLX$Open))
+normalized_AMZN_open = (AMZN$Open-min(AMZN$Open))/(max(AMZN$Open)-min(AMZN$Open))
+
+
+Stock_factorcalc_FB <- function(x)
+{
+  Close_Price_Stock = matrix( cbind( as.numeric(x[1]),as.numeric(x[7]) ),nrow =1)
+  Difference_Stock_close = diff(data.frame(normalized_FB_close)- data.frame(normalized_SP500_Close))
+  Stock_Factor_FB = (Difference_Stock_close/1258)
+  return (Stock_Factor_FB)
+}
+normalized_FB_close$Stock_Factor_FB = apply(normalized_SP500_close, 1, Stock_factorcalc_FB)
+
+Stock_factorcalc_GOOGL <- function(x)
+{
+  Close_Price_Stock = matrix( cbind( as.numeric(x[1]),as.numeric(x[7]) ),nrow =1)
+  Difference_Stock_close = ('normalized_GOOGL_close' - 'normalized_SP500_Close')
+  Stock_Factor_FB = (Difference_Stock_close/1258)
+  return (Stock_Factor_GOOGL)
+}
+Stock_factorcalc_NFLX <- function(x)
+{
+  Close_Price_Stock = matrix( cbind( as.numeric(x[1]),as.numeric(x[7]) ),nrow =1)
+  Difference_Stock_close = ('normalized_NFLX_close' - 'normalized_SP500_Close')
+  Stock_Factor_NFLX = (Difference_Stock_close/1258)
+  return (Stock_Factor_NFLX)
+}
+Stock_factorcalc_AMZN <- function(x)
+{
+  Close_Price_Stock = matrix( cbind( as.numeric(x[1]),as.numeric(x[7]) ),nrow =1)
+  Difference_Stock_close = ('normalized_AMZN_close' - 'normalized_SP500_Close')
+  Stock_Factor_AMZN = (Difference_Stock_close/1258)
+  return (Stock_Factor_AMZN)
+}
+Base_factorcalc <- function(x)
+{
+  Close_Price_Base = matrix( cbind( as.numeric(x[1]),as.numeric(x[7]) ),nrow =1)
+  Base_Factor = (normalized_SP500_Close/1258)
+  return (Base_Factor)
+}
+ Final_Factor_FB <- function(x)
+{
+   Final_Stock_Factor_FB = (Stock_factorcalc_FB(data = 'normalized_GOOGL_close')/Base_factorcalc(data = 'normalized_SP500_close'))
+   return (Final_Stock_Factor_FB)
+}
+  Final_Factor_GOOGL <- function(x)
+{
+   Final_Stock_Factor_GOOGL = (Stock_factorcalc_GOOGL(data = 'normalized_GOOGL_close')/Base_factorcalc(data = 'normalized_SP500_close'))
+   return (Final_Stock_Factor_GOOGL)
+}
+  Final_Factor_NFLX <- function(x)
+{
+   Final_Stock_Factor_NFLX = (Stock_factorcalc_NFLX(data = 'normalized_NFLX_close')/Base_factorcalc(data = 'normalized_SP500_close'))
+   return (Final_Stock_Factor_NFLX)
+}
+ Final_Factor_AMZN <- function(x)
+{
+   Final_Stock_Factor_AMZN = (Stock_factorcalc_AMZN(data = 'normalized_AMZN_close')/Base_factorcalc(data = 'normalized_SP500_close'))
+   return (Final_Stock_Factor_AMZN)
+}
+ Final_Factor_SP500 <- function(x)
+ {
+   Final_Stock_Factor_SP500 = Base_factorcalc(data = 'normalized_SP500_close')
+   return (Final_Stock_Factor_SP500)
+ }
+ cumulative_deviation_FB <- lapply(Final_Factor_FB(data(normalized_GOOGL_close), sum))
+   
+ cumulative_deviation_GOOGL <- lapply(Final_Factor_GOOGL(data(normalized_GOOGL_close), sum))
+  
+ cumulative_deviation_NFLX <- lapply(Final_Factor_NFLX(data(normalized_NFLX_close), sum))
+  
+ cumulative_deviation_AMZN <- lapply(Final_Factor_AMZN(data(normalized_AMZN_close), sum))
+   
+ cumulative_deviation_SP500 <- lapply(Final_Factor_SP500(data(normalized_SP500_close), sum))
+   
+ view(cumulative_FB)
+ view(cumulative_GOOGL)
+ view(cumulative_NFLX)
+ view(cumulative_AMZN)
+ view(cumulative_SP500)
+ 
+ 
+ 
+ 
+ 
+ 
+ #Rough code module
+ cumulative_FB = cumulative_deviation_FB('normalized_FB_close')
+ cumulative_GOOGL = cumulative_deviation_GOOGL('normalized_GOOGL_close')
+ cumulative_NFLX = cumulative_deviation_NFLX('normalized_NFLX_close')
+ cumulative_AMZN = cumulative_deviation_AMZN('normalized_AMZN_close')
+ cumulative_SP500 = cumulative_deviation_SP500('normalized_SP500_close')
+ 
+ cumulative_deviation_FB = function(x)
+ {
+   FB_Deviation = lapply(Final_Factor_FB(normalized_FB_close), sum)
+   return(FB_Deviation)
+ }
+ cumulative_deviation_GOOGL = function(x)
+ {
+   GOOGL_Deviation = lapply(Final_Factor_GOOGL(normalized_GOOGL_close), sum)
+   return(GOOGL_Deviation)
+ }
+ cumulative_deviation_NFLX = function(x)
+ {
+   NFLX_Deviation = lapply(Final_Factor_NFLX(normalized_NFLX_close), sum)
+   return(NFLX_Deviation)
+ }
+ cumulative_deviation_AMZN = function(x)
+ {
+   AMZN_Deviation = lapply(Final_Factor_AMZN(normalized_AMZN_close), sum)
+   return(AMZN_Deviation)
+ }
+ cumulative_deviation_SP500 = function(x)
+ {
+   SP500_Deviation = lapply(Final_Factor_SP500(normalized_SP500_close), sum)
+   return(SP500_Deviation)
+ }
+ 
+ 
+ 
+ neural_apply_FB = neuralnet(normalized_FB_close, formula = Stock_factorcalc_FB(normalized_FB_close))
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ -min(SP500$Adj.Close))/(max(SP500$Adj.Close)-min(SP500$Adj.Close))
+                         
