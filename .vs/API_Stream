@@ -1,0 +1,5 @@
+
+import quandl
+
+quandl.ApiConfig.api_key = "3y7JSvUPtmn2ysHdKsC"
+curl "https://www.quandl.com/api/v3/datasets/WIKI/FB/data.json?api_key=y7JSvUPtmn2ysHdKsC"
